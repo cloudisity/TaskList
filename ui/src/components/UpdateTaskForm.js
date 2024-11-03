@@ -1,6 +1,6 @@
-
-import React, { useState } from "react";
-import { Button, Dialog, DialogTitle, TextField } from "@mui/material";
+// src/components/UpdateTaskForm.js
+import React, { useState, useEffect } from "react";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Stack } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import axios from "axios";
 import { API_URL } from "../utils";
@@ -11,10 +11,22 @@ export const UpdateTaskForm = ({
   setIsDialogOpen,
   task,
 }) => {
-  const { id, completed } = task;
+  const { id, name, completed } = task;
   const [taskName, setTaskName] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isDialogOpen) {
+      setTaskName(name);
+      setError("");
+    }
+  }, [isDialogOpen, name]);
 
   const handleUpdateTaskName = async () => {
+    if (taskName.trim() === "") {
+      setError("Task name cannot be empty.");
+      return;
+    }
     try {
       await axios.put(API_URL, {
         id,
@@ -25,32 +37,52 @@ export const UpdateTaskForm = ({
       await fetchTasks();
 
       setTaskName("");
+      setIsDialogOpen(false);
     } catch (err) {
-      console.log(err);
+      console.error("Error updating task:", err);
+      setError("Failed to update task. Please try again.");
     }
   };
 
   return (
-    <Dialog open={isDialogOpen}>
+    <Dialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
       <DialogTitle>Edit Task</DialogTitle>
-      <div className="dialog">
+      <DialogContent>
         <TextField
-          size="small"
-          label="Task"
+          autoFocus
+          margin="dense"
+          label="Task Name"
+          type="text"
+          fullWidth
           variant="outlined"
+          value={taskName}
           onChange={(e) => setTaskName(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          onClick={async () => {
-            await handleUpdateTaskName();
-            
-            setIsDialogOpen(false);
+          error={Boolean(error)}
+          helperText={error}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") handleUpdateTaskName();
           }}
-        >
-          <CheckIcon />
-        </Button>
-      </div>
+        />
+      </DialogContent>
+      <DialogActions>
+        <Stack direction="row" spacing={1}>
+          <Button
+            onClick={handleUpdateTaskName}
+            variant="contained"
+            color="primary"
+            startIcon={<CheckIcon />}
+          >
+            Save
+          </Button>
+          <Button
+            onClick={() => setIsDialogOpen(false)}
+            variant="outlined"
+            color="secondary"
+          >
+            Cancel
+          </Button>
+        </Stack>
+      </DialogActions>
     </Dialog>
   );
 };

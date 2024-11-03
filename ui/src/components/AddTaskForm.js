@@ -1,14 +1,20 @@
+// src/components/AddTaskForm.js
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, Stack, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { API_URL } from "../utils";
 
 export const AddTaskForm = ({ fetchTasks }) => {
   const [newTask, setNewTask] = useState("");
+  const [error, setError] = useState("");
 
   const addNewTask = async () => {
+    if (newTask.trim() === "") {
+      setError("Task name cannot be empty.");
+      return;
+    }
     try {
       await axios.post(API_URL, {
         name: newTask,
@@ -18,32 +24,44 @@ export const AddTaskForm = ({ fetchTasks }) => {
       await fetchTasks();
 
       setNewTask("");
+      setError("");
     } catch (err) {
-      console.log(err);
+      console.error("Error adding task:", err);
+      setError("Failed to add task. Please try again.");
     }
   };
 
   return (
     <div>
-      <Typography align="center" variant="h2" paddingTop={2} paddingBottom={2}>
-        My Task List
-      </Typography>
-      <div className="addTaskForm">
+      <Stack direction="row" spacing={2} alignItems="center">
         <TextField
+          fullWidth
           size="small"
-          label="Task"
+          label="New Task"
           variant="outlined"
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") addNewTask();
+          }}
+          error={Boolean(error)}
+          helperText={error}
         />
-        <Button
-          disabled={!newTask.length}
-          variant="outlined"
-          onClick={addNewTask}
-        >
-          <AddIcon />
-        </Button>
-      </div>
+        <Tooltip title="Add Task">
+          <span>
+            {/* Span is needed to handle disabled tooltip */}
+            <Button
+              disabled={!newTask.trim().length}
+              variant="contained"
+              color="primary"
+              onClick={addNewTask}
+              startIcon={<AddIcon />}
+            >
+              Add
+            </Button>
+          </span>
+        </Tooltip>
+      </Stack>
     </div>
   );
 };
