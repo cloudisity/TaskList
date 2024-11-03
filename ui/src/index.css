@@ -1,45 +1,20 @@
-/* src/index.css */
 body {
     display: flex;
     justify-content: center;
-    background-color: #121212; /* Match dark theme */
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
   }
   
   .addTaskForm {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
     gap: 10px;
     margin-bottom: 2rem;
-    width: 100%;
-    max-width: 600px;
-  }
-  
-  .taskInputContainer {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-  }
-  
-  .tasksContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    max-width: 600px;
   }
   
   .task {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
-    background-color: #1e1e1e;
-    border-radius: 8px;
+    gap: 10px;
   }
   
   .taskButtons {
@@ -56,11 +31,8 @@ body {
   
   .flex {
     display: flex;
-    align-items: center;
   }
   
   .done {
     text-decoration: line-through;
-    color: gray;
   }
-  
