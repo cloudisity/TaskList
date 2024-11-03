@@ -1,8 +1,5 @@
 /* src/index.css */
 body {
-    display: flex;
-    justify-content: center;
-    background-color: #121212; /* Match dark theme */
     min-height: 100vh;
     margin: 0;
     padding: 0;

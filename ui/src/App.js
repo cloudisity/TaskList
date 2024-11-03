@@ -9,11 +9,12 @@ import {
   Typography,
   Divider,
   Box,
-  Button,
+  FormControlLabel,
+  Switch,
   Stack,
 } from "@mui/material";
-import Brightness4Icon from "@mui/icons-material/Brightness4"; // Icon for dark mode
-import Brightness7Icon from "@mui/icons-material/Brightness7"; // Icon for light mode
+import Brightness4Icon from "@mui/icons-material/Brightness4"; // Moon Icon
+import Brightness7Icon from "@mui/icons-material/Brightness7"; // Sun Icon
 import { AddTaskForm } from "./components/AddTaskForm";
 import { Task } from "./components/Task";
 import axios from "axios";
@@ -21,9 +22,13 @@ import { API_URL } from "./utils";
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
-  const [mode, setMode] = useState("dark"); // 'light' or 'dark'
+  const [mode, setMode] = useState(() => {
+    // Retrieve the theme mode from localStorage if available
+    const savedMode = localStorage.getItem("themeMode");
+    return savedMode ? savedMode : "dark";
+  });
 
-  // Create a theme instance based on the current mode
+  // Define the theme based on the current mode
   const theme = createTheme({
     palette: {
       mode: mode,
@@ -42,7 +47,11 @@ export default function App() {
 
   // Function to toggle between light and dark modes
   const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "dark" ? "light" : "dark"));
+    setMode((prevMode) => {
+      const newMode = prevMode === "dark" ? "light" : "dark";
+      localStorage.setItem("themeMode", newMode); // Persist theme preference
+      return newMode;
+    });
   };
 
   // Fetch tasks from the backend
@@ -72,7 +81,7 @@ export default function App() {
         }}
       >
         <Paper elevation={3} sx={{ p: 3 }}>
-          {/* Header Section with Title and Theme Toggle Button */}
+          {/* Header Section with Title and Theme Toggle Switch */}
           <Stack
             direction="row"
             justifyContent="space-between"
@@ -80,16 +89,18 @@ export default function App() {
             mb={2}
           >
             <Typography variant="h4">My Task List</Typography>
-            <Button
-              onClick={toggleTheme}
-              variant="outlined"
-              startIcon={
-                mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={mode === "dark"}
+                  onChange={toggleTheme}
+                  color="primary"
+                />
               }
-              aria-label="toggle dark mode"
-            >
-              {mode === "dark" ? "Light Mode" : "Dark Mode"}
-            </Button>
+              label={mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
+              labelPlacement="start"
+              sx={{ m: 0 }}
+            />
           </Stack>
           <Divider sx={{ mb: 2 }} />
           {/* Add Task Form */}

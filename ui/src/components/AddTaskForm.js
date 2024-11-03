@@ -1,7 +1,13 @@
 // src/components/AddTaskForm.js
 import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import { Button, Typography, Stack, Tooltip } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Stack,
+  Tooltip,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { API_URL } from "../utils";
@@ -9,6 +15,9 @@ import { API_URL } from "../utils";
 export const AddTaskForm = ({ fetchTasks }) => {
   const [newTask, setNewTask] = useState("");
   const [error, setError] = useState("");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const addNewTask = async () => {
     if (newTask.trim() === "") {
@@ -25,9 +34,15 @@ export const AddTaskForm = ({ fetchTasks }) => {
 
       setNewTask("");
       setError("");
+      setSnackbarMessage("Task added successfully!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
     } catch (err) {
       console.error("Error adding task:", err);
       setError("Failed to add task. Please try again.");
+      setSnackbarMessage("Failed to add task.");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     }
   };
 
@@ -62,6 +77,21 @@ export const AddTaskForm = ({ fetchTasks }) => {
           </span>
         </Tooltip>
       </Stack>
+      {/* Snackbar for user feedback */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
