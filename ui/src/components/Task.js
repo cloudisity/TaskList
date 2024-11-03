@@ -1,41 +1,38 @@
-// src/components/Task.js
-import { Checkbox, Typography, Button } from "@mui/material";
+import { Button, Checkbox, Typography } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import React, { useState } from "react";
 import { UpdateTaskForm } from "./UpdateTaskForm";
 import classnames from "classnames";
-import { API_URL } from "../utils";
 import axios from "axios";
+import { API_URL } from "../utils";
 
-export const Task = ({ task, onDelete, onUpdate, fetchTasks }) => {
-  const { id, taskName, completed } = task;
+export const Task = ({ task, fetchTasks }) => {
+  const { id, name, completed } = task;
   const [isComplete, setIsComplete] = useState(completed);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleUpdateTaskCompletion = async () => {
     try {
       await axios.put(API_URL, {
-        id, name, completed: !isComplete,
-      }
-        );
+        id,
+        name,
+        completed: !isComplete,
+      });
+      setIsComplete((prev) => !prev);
     } catch (err) {
-      console.error(err);
+      console.log(err);
     }
   };
 
-  const handleDeleteTask = async() => {
-    try{
-      await axios.delete(`${API_URL}/$task.id}`);
+  const handleDeleteTask = async () => {
+    try {
+      await axios.delete(`${API_URL}/${task.id}`);
 
       await fetchTasks();
-    } catch(err){
-      console.error(err);
+    } catch (err) {
+      console.log(err);
     }
-  };
-
-  const handleUpdateTaskName = (updatedTaskName) => {
-    onUpdate(id, { ...task, taskName: updatedTaskName });
   };
 
   return (
@@ -46,7 +43,7 @@ export const Task = ({ task, onDelete, onUpdate, fetchTasks }) => {
         })}
       >
         <Checkbox checked={isComplete} onChange={handleUpdateTaskCompletion} />
-        <Typography variant="h4"> {taskName}</Typography>
+        <Typography variant="h4">{name}</Typography>
       </div>
       <div className="taskButtons">
         <Button variant="contained" onClick={() => setIsDialogOpen(true)}>
@@ -61,7 +58,6 @@ export const Task = ({ task, onDelete, onUpdate, fetchTasks }) => {
         isDialogOpen={isDialogOpen}
         setIsDialogOpen={setIsDialogOpen}
         task={task}
-        onUpdateTaskName={handleUpdateTaskName}
       />
     </div>
   );
